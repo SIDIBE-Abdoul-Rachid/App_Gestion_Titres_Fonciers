@@ -1,15 +1,19 @@
-import java.util.ArrayList;
-import java.util.List;
+// Import nécessaire pour gérer la date
+import java.text.SimpleDateFormat;
 import java.util.Scanner;
+import java.util.Date;
 
 public class Main {
     public static void main(String[] args) {
-        List<Propriete> proprietes = new ArrayList<>();
-        List<Transaction> transactions = new ArrayList<>();
         Scanner scanner = new Scanner(System.in);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
-        // Menu simple pour gérer les propriétés et les transactions
-        while (true) {
+        // Variables pour simuler les propriétés et transactions
+        Propriete propriete = null;
+        Transaction transaction = null;
+
+        boolean continuer = true;
+        while (continuer) {
             System.out.println("\nMenu:");
             System.out.println("1. Ajouter une propriété");
             System.out.println("2. Afficher toutes les propriétés");
@@ -18,82 +22,79 @@ public class Main {
             System.out.println("5. Quitter");
             System.out.print("Choisissez une option : ");
             int choix = scanner.nextInt();
-            scanner.nextLine(); // Consommer la ligne restante
+            scanner.nextLine();  // Consomme la ligne restante
 
-            if (choix == 1) {
-                // Créer une nouvelle propriété
-                System.out.print("Entrez le numéro de titre : ");
-                String numeroTitre = scanner.nextLine();
-                System.out.print("Entrez la superficie : ");
-                double superficie = scanner.nextDouble();
-                scanner.nextLine(); // Consommer la ligne restante
-                System.out.print("Entrez l'emplacement : ");
-                String emplacement = scanner.nextLine();
-                System.out.print("Entrez le nom du propriétaire : ");
-                String nomProprietaire = scanner.nextLine();
-                System.out.print("Entrez l'adresse du propriétaire : ");
-                String adresseProprietaire = scanner.nextLine();
-
-                Proprietaire proprietaire = new Proprietaire(nomProprietaire, adresseProprietaire);
-                Propriete propriete = new Propriete(numeroTitre, superficie, emplacement, proprietaire);
-                proprietes.add(propriete);
-                System.out.println("Propriété ajoutée avec succès !");
-            } else if (choix == 2) {
-                // Afficher toutes les propriétés
-                if (proprietes.isEmpty()) {
-                    System.out.println("Aucune propriété enregistrée.");
-                } else {
-                    for (Propriete propriete : proprietes) {
-                        System.out.println("Propriété " + propriete.getNumeroTitre() + " située à " + propriete.getEmplacement() + " avec une superficie de " + propriete.getSuperficie() + " m².");
-                    }
-                }
-            } else if (choix == 3) {
-                // Ajouter une transaction
-                if (proprietes.isEmpty()) {
-                    System.out.println("Aucune propriété disponible pour les transactions.");
-                } else {
-                    System.out.print("Entrez le numéro de titre de la propriété : ");
+            switch (choix) {
+                case 1:
+                    System.out.print("Entrez le numéro de titre : ");
                     String numeroTitre = scanner.nextLine();
-                    Propriete propriete = null;
-                    for (Propriete p : proprietes) {
-                        if (p.getNumeroTitre().equals(numeroTitre)) {
-                            propriete = p;
-                            break;
-                        }
-                    }
-                    if (propriete != null) {
-                        System.out.print("Entrez le type de transaction (vente, donation) : ");
-                        String typeTransaction = scanner.nextLine();
-                        System.out.print("Entrez la date de transaction (jj/mm/aaaa) : ");
-                        String date = scanner.nextLine();
-                        System.out.print("Entrez le prix de la transaction : ");
-                        double prix = scanner.nextDouble();
-                        scanner.nextLine(); // Consommer la ligne restante
+                    System.out.print("Entrez la superficie : ");
+                    double superficie = scanner.nextDouble();
+                    scanner.nextLine(); // Consomme la ligne restante
+                    System.out.print("Entrez l'emplacement : ");
+                    String emplacement = scanner.nextLine();
+                    System.out.print("Entrez le nom du propriétaire : ");
+                    String nomProprietaire = scanner.nextLine();
+                    System.out.print("Entrez l'adresse du propriétaire : ");
+                    String adresseProprietaire = scanner.nextLine();
 
-                        Transaction transaction = new Transaction(typeTransaction, date, prix, propriete);
-                        transactions.add(transaction);
-                        System.out.println("Transaction ajoutée avec succès !");
+                    // Création du propriétaire
+                    Proprietaire proprietaire = new Proprietaire(nomProprietaire, adresseProprietaire);
+
+                    // Création de la propriété
+                    propriete = new Propriete(numeroTitre, superficie, emplacement, proprietaire);
+                    System.out.println("Propriété ajoutée avec succès !");
+                    break;
+
+                case 2:
+                    if (propriete != null) {
+                        System.out.println("Propriété " + propriete.getNumeroTitre() + " située à " + propriete.getEmplacement() +
+                                " avec une superficie de " + propriete.getSuperficie() + " m².");
                     } else {
-                        System.out.println("Propriété non trouvée.");
+                        System.out.println("Aucune propriété enregistrée.");
                     }
-                }
-            } else if (choix == 4) {
-                // Afficher toutes les transactions
-                if (transactions.isEmpty()) {
-                    System.out.println("Aucune transaction enregistrée.");
-                } else {
-                    for (Transaction transaction : transactions) {
-                        System.out.println("Transaction de type " + transaction.getTypeTransaction() + " pour la propriété " + transaction.getPropriete().getNumeroTitre() + " effectuée le " + transaction.getDate() + " au prix de " + transaction.getPrix() + ".");
+                    break;
+
+                case 3:
+                    if (propriete == null) {
+                        System.out.println("Vous devez d'abord ajouter une propriété.");
+                        break;
                     }
-                }
-            } else if (choix == 5) {
-                System.out.println("Au revoir !");
-                break;
-            } else {
-                System.out.println("Choix non valide, veuillez réessayer.");
+
+                    System.out.print("Entrez le type de transaction (vente, donation) : ");
+                    String typeTransaction = scanner.nextLine();
+                    System.out.print("Entrez la date de transaction (jj/mm/aaaa) : ");
+                    String dateTransactionStr = scanner.nextLine();
+                    System.out.print("Entrez le prix de la transaction : ");
+                    double prix = scanner.nextDouble();
+                    scanner.nextLine();  // Consomme la ligne restante
+
+                    try {
+                        // Création de la transaction avec 5 paramètres
+                        transaction = new Transaction(typeTransaction, dateFormat.parse(dateTransactionStr), prix, propriete, propriete.getProprietaire());
+                        System.out.println("Transaction ajoutée avec succès !");
+                    } catch (Exception e) {
+                        System.out.println("Erreur lors de la création de la transaction : " + e.getMessage());
+                    }
+                    break;
+
+                case 4:
+                    if (transaction != null) {
+                        System.out.println(transaction);
+                    } else {
+                        System.out.println("Aucune transaction enregistrée.");
+                    }
+                    break;
+
+                case 5:
+                    System.out.println("Au revoir !");
+                    continuer = false;
+                    break;
+
+                default:
+                    System.out.println("Option invalide. Veuillez réessayer.");
             }
         }
-
         scanner.close();
     }
 }
